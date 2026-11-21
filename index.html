@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>STEP English — بيئة المتعلم العربي</title>
+<style>
+  :root{
+    --bg:#f4f7fb; --card:#ffffff; --ink:#0f172a; --muted:#64748b;
+    --line:#e2e8f0; --brand:#0d9488; --brand2:#14b8a6; --gold:#f59e0b;
+    --danger:#ef4444; --ok:#22c55e; --shadow:0 10px 30px rgba(15,23,42,.08);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.7}
+  button{font-family:inherit;cursor:pointer}
+  .wrap{max-width:1100px;margin:auto;padding:16px}
+  header{background:linear-gradient(135deg,#0f766e,#0d9488);color:#fff;padding:18px 16px;border-radius:0 0 22px 22px;box-shadow:var(--shadow)}
+  header .row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px}
+  .logo .badge{background:#fff;color:#0f766e;border-radius:12px;padding:4px 10px;font-size:12px}
+  .chip{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700}
+  nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  nav button{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:12px;padding:8px 14px;font-weight:700}
+  nav button.active{background:#fff;color:#0f766e;border-color:#fff}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
+  .card h3{margin:0 0 10px;font-size:16px}
+  .muted{color:var(--muted);font-size:13px}
+  .stat{font-size:30px;font-weight:900;color:var(--brand)}
+  .bar{height:9px;background:#e6eef3;border-radius:99px;overflow:hidden;margin-top:6px}
+  .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--brand2),var(--gold));border-radius:99px;transition:width .4s}
+  .btn{border:0;border-radius:12px;padding:10px 16px;font-weight:800;background:var(--brand);color:#fff;transition:.15s}
+  .btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+  .btn.ghost{background:#eef2f7;color:var(--ink)}
+  .btn.gold{background:var(--gold);color:#3b2700}
+  .btn.danger{background:var(--danger)}
+  .btn.sm{padding:6px 10px;font-size:12px}
+  .en{direction:ltr;text-align:left;font-family:"Segoe UI",Arial,sans-serif}
+  .ipa{direction:ltr;color:var(--muted);font-family:"Segoe UI",Arial,sans-serif}
+  .pill{display:inline-block;background:#e0f2f1;color:#0f766e;border-radius:99px;padding:2px 10px;font-size:12px;font-weight:800}
+  .steps{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+  .steps span{background:#eef2f7;border-radius:99px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--muted)}
+  .steps span.on{background:#ccfbf1;color:#0f766e}
+  .steps span.done{background:#dcfce7;color:#15803d}
+  .flash{min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:linear-gradient(160deg,#f8fafc,#e0f2f1);border-radius:16px;border:1px dashed #99f6e4;cursor:pointer;text-align:center}
+  .flash .word{font-size:44px;font-weight:900;direction:ltr}
+  .flash .tr{font-size:20px;color:var(--brand)}
+  .opt{display:block;width:100%;text-align:right;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin:8px 0;font-weight:700;color:var(--ink)}
+  .opt:hover{border-color:var(--brand2)}
+  .opt.sel{border-color:var(--brand);background:#f0fdfa}
+  .opt.right{border-color:var(--ok);background:#f0fdf4}
+  .opt.wrong{border-color:var(--danger);background:#fef2f2}
+  .qfont{font-size:18px;font-weight:800}
+  textarea{width:100%;min-height:120px;border:1px solid var(--line);border-radius:12px;padding:12px;font-family:inherit;resize:vertical}
+  input[type=text]{border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-family:inherit}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:right;vertical-align:top}
+  th{color:var(--muted)}
+  .hidden{display:none!important}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:12px 20px;border-radius:12px;box-shadow:var(--shadow);z-index:99;font-weight:700}
+  .rowflex{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .weekbox{border-right:4px solid var(--brand2);padding-right:12px;margin:10px 0}
+  .weekbox.done{border-color:var(--ok);opacity:.75}
+  details{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:8px 0}
+  summary{cursor:pointer;font-weight:800}
+  @media(max-width:600px){.flash .word{font-size:34px}.stat{font-size:24px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap" style="padding:0">
+    <div class="row">
+      <div class="logo">STEP English <span class="badge">عربي → إنجليزي</span></div>
+      <div class="rowflex">
+        <span class="chip" id="chipWeek">الأسبوع 1</span>
+        <span class="chip" id="chipBridge">العربية: جسر كامل</span>
+        <span class="chip" id="chipXP">0 XP</span>
+      </div>
+    </div>
+    <nav>
+      <button data-tab="today" class="active">📅 اليوم</button>
+      <button data-tab="path">🗺️ المسار</button>
+      <button data-tab="cards">🃏 البطاقات</button>
+      <button data-tab="bank">🎯 بنك STEP</button>
+      <button data-tab="errors">📕 أخطائي</button>
+      <button data-tab="settings">⚙️ الإعدادات</button>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <section id="tab-today"></section>
+  <section id="tab-path" class="hidden"></section>
+  <section id="tab-cards" class="hidden"></section>
+  <section id="tab-bank" class="hidden"></section>
+  <section id="tab-errors" class="hidden"></section>
+  <section id="tab-settings" class="hidden"></section>
+</div>
+<div id="toast"></div>
+
+<script>
+/* ============ التخزين ============ */
+const KEY='stepEnglishApp_v1';
+const DEF={
+  settings:{week:1,day:1,bridge:'auto',sound:true,rate:.85,name:'المتعلم'},
+  progress:{xp:0,streak:0,last:'',days:{},weeks:{},section:{listening:0,structure:0,reading:0,writing:0},errors:[]},
+  srs:{}, errors:[]
+};
+let A;
+try{A=Object.assign({},DEF,JSON.parse(localStorage.getItem(KEY)||'{}'));}catch(e){A=JSON.parse(JSON.stringify(DEF));}
+A.settings=Object.assign({},DEF.settings,A.settings||{});
+A.progress=Object.assign({},DEF.progress,A.progress||{});
+A.progress.section=Object.assign({},DEF.progress.section,A.progress.section||{});
+function save(){localStorage.setItem(KEY,JSON.stringify(A));}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.className='toast';setTimeout(()=>e.className='toast hidden',2200);}
+
+/* ============ الصوت ============ */
+function speak(t){
+  if(!A.settings.sound||!('speechSynthesis'in window))return;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=A.settings.rate||.85;
+    const vs=speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.toLowerCase().startsWith('en'));
+    if(vs.length)u.voice=vs[0];speechSynthesis.speak(u);}catch(e){}
+}
+function bridge(){const w=A.settings.week;if(A.settings.bridge==='auto')return w<=2?2:(w<=6?1:0);return +A.settings.bridge;}
+function ar(x){return bridge()>0?x:'';}
+
+/* ============ المحتوى: الكلمات ============ */
+const VOCAB=[
+ {w:'hello',a:'مرحباً',c:'greet'},{w:'goodbye',a:'وداعاً',c:'greet'},{w:'good morning',a:'صباح الخير',c:'greet'},
+ {w:'please',a:'من فضلك',c:'greet'},{w:'thank you',a:'شكراً لك',c:'greet'},{w:'sorry',a:'آسف',c:'greet'},
+ {w:'yes',a:'نعم',c:'greet'},{w:'no',a:'لا',c:'greet'},{w:'name',a:'اسم',c:'greet'},{w:'friend',a:'صديق',c:'greet'},
+ {w:'one',a:'واحد',c:'num'},{w:'two',a:'اثنان',c:'num'},{w:'three',a:'ثلاثة',c:'num'},{w:'four',a:'أربعة',c:'num'},
+ {w:'five',a:'خمسة',c:'num'},{w:'six',a:'ستة',c:'num'},{w:'seven',a:'سبعة',c:'num'},{w:'ten',a:'عشرة',c:'num'},
+ {w:'red',a:'أحمر',c:'color'},{w:'blue',a:'أزرق',c:'color'},{w:'green',a:'أخضر',c:'color'},{w:'black',a:'أسود',c:'color'},
+ {w:'white',a:'أبيض',c:'color'},{w:'yellow',a:'أصفر',c:'color'},
+ {w:'mother',a:'أم',c:'family'},{w:'father',a:'أب',c:'family'},{w:'sister',a:'أخت',c:'family'},{w:'brother',a:'أخ',c:'family'},
+ {w:'family',a:'عائلة',c:'family'},{w:'baby',a:'طفل صغير',c:'family'},
+ {w:'bread',a:'خبز',c:'food'},{w:'water',a:'ماء',c:'food'},{w:'milk',a:'حليب',c:'food'},{w:'rice',a:'أرز',c:'food'},
+ {w:'egg',a:'بيضة',c:'food'},{w:'apple',a:'تفاحة',c:'food'},{w:'tea',a:'شاي',c:'food'},{w:'coffee',a:'قهوة',c:'food'},
+ {w:'house',a:'منزل',c:'home'},{w:'door',a:'باب',c:'home'},{w:'window',a:'نافذة',c:'home'},{w:'chair',a:'كرسي',c:'home'},
+ {w:'table',a:'طاولة',c:'home'},{w:'bed',a:'سرير',c:'home'},{w:'book',a:'كتاب',c:'home'},{w:'pen',a:'قلم',c:'home'},
+ {w:'bag',a:'حقيبة',c:'school'},{w:'desk',a:'مكتب',c:'school'},{w:'teacher',a:'معلم',c:'school'},{w:'student',a:'طالب',c:'school'},
+ {w:'school',a:'مدرسة',c:'school'},{w:'question',a:'سؤال',c:'school'},{w:'answer',a:'إجابة',c:'school'},
+ {w:'head',a:'رأس',c:'body'},{w:'hand',a:'يد',c:'body'},{w:'eye',a:'عين',c:'body'},{w:'ear',a:'أذن',c:'body'},
+ {w:'foot',a:'قدم',c:'body'},{w:'mouth',a:'فم',c:'body'},
+ {w:'go',a:'يذهب',c:'verb'},{w:'come',a:'يأتي',c:'verb'},{w:'eat',a:'يأكل',c:'verb'},{w:'drink',a:'يشرب',c:'verb'},
+ {w:'see',a:'يرى',c:'verb'},{w:'read',a:'يقرأ',c:'verb'},{w:'write',a:'يكتب',c:'verb'},{w:'sit',a:'يجلس',c:'verb'},
+ {w:'stand',a:'يقف',c:'verb'},{w:'open',a:'يفتح',c:'verb'},{w:'close',a:'يغلق',c:'verb'},{w:'like',a:'يحب',c:'verb'},
+ {w:'want',a:'يريد',c:'verb'},{w:'have',a:'يملك',c:'verb'},{w:'can',a:'يستطيع',c:'verb'},{w:'play',a:'يلعب',c:'verb'},
+ {w:'work',a:'يعمل',c:'verb'},{w:'sleep',a:'ينام',c:'verb'},
+ {w:'big',a:'كبير',c:'adj'},{w:'small',a:'صغير',c:'adj'},{w:'good',a:'جيد',c:'adj'},{w:'bad',a:'سيئ',c:'adj'},
+ {w:'new',a:'جديد',c:'adj'},{w:'old',a:'قديم',c:'adj'},{w:'hot',a:'ساخن',c:'adj'},{w:'cold',a:'بارد',c:'adj'},
+ {w:'happy',a:'سعيد',c:'adj'},{w:'tired',a:'متعب',c:'adj'},
+ {w:'what',a:'ماذا',c:'q'},{w:'where',a:'أين',c:'q'},{w:'when',a:'متى',c:'q'},{w:'who',a:'من',c:'q'},
+ {w:'why',a:'لماذا',c:'q'},{w:'how',a:'كيف',c:'q'},{w:'how many',a:'كم عدد',c:'q'},
+ {w:'today',a:'اليوم',c:'time'},{w:'tomorrow',a:'غداً',c:'time'},{w:'yesterday',a:'أمس',c:'time'},{w:'morning',a:'صباح',c:'time'},
+ {w:'night',a:'ليل',c:'time'},{w:'hour',a:'ساعة',c:'time'},{w:'day',a:'يوم',c:'time'},
+ {w:'in',a:'في/داخل',c:'prep'},{w:'on',a:'على',c:'prep'},{w:'under',a:'تحت',c:'prep'},{w:'to',a:'إلى',c:'prep'},
+ {w:'from',a:'من',c:'prep'},{w:'with',a:'مع',c:'prep'},
+ {w:'city',a:'مدينة',c:'place'},{w:'home',a:'المنزل',c:'place'},{w:'shop',a:'متجر',c:'place'},{w:'park',a:'حديقة',c:'place'},
+ {w:'airport',a:'مطار',c:'place'},{w:'hospital',a:'مستشفى',c:'place'}
+];
+const VCAT={greet:'تحيات',num:'أرقام',color:'ألوان',family:'عائلة',food:'طعام',home:'المنزل',school:'المدرسة',body:'الجسم',verb:'أفعال',adj:'صفات',q:'أسئلة',time:'زمن',prep:'حروف جر',place:'أماكن'};
+
+/* ============ الأزواج الدنيا ============ */
+const MINIMAL=[
+ {a:'ship',b:'sheep',hint:'سفينة / خروف — قصير أم طويل؟'},
+ {a:'bit',b:'beat',hint:'قضمة / يضرب'},
+ {a:'cat',b:'cut',hint:'قط / يقطع'},
+ {a:'fan',b:'van',hint:'مروحة / شاحنة — F أم V؟'},
+ {a:'pan',b:'ban',hint:'مقلاة / يمنع — P أم B؟'},
+ {a:'cap',b:'cab',hint:'غطاء / سيارة أجرة — P أم B؟'},
+ {a:'light',b:'right',hint:'ضوء / يمين — L أم R؟'},
+ {a:'thin',b:'sin',hint:'رفيع / ذنب — TH أم S؟'},
+ {a:'this',b:'dis',hint:'هذا / (كلمة غير صحيحة) — DH أم D؟'},
+ {a:'seat',b:'sit',hint:'مقعد / يجلس'},
+ {a:'full',b:'fool',hint:'ممتلئ / أحمق'},
+ {a:'bed',b:'bad',hint:'سرير / سيئ'}
+];
+
+/* ============ المنهج ============ */
+const WEEKS=[
+ {t:'الأصوات والكلمات الأولى',a:'أساس النطق والتحيات',focus:'phonics',
+  learn:[{w:'a',a:'الصوت /æ/ كما في cat',ex:'cat, bag, map'},{w:'e',a:'الصوت /e/ كما في pen',ex:'pen, bed, red'},
+   {w:'i',a:'الصوت /ɪ/ كما في sit',ex:'sit, big, pin'},{w:'o',a:'الصوت /ɒ/ كما في dog',ex:'dog, box, hot'},
+   {w:'u',a:'الصوت /ʌ/ كما في cup',ex:'cup, bus, sun'},{w:'hello',a:'مرحباً',ex:'Hello, I am Ali.'},
+   {w:'name',a:'اسم',ex:'My name is Sara.'},{w:'friend',a:'صديق',ex:'This is my friend.'}],
+  pattern:'I am + الاسم  →  I am Ali.',
+  drills:[{k:'minimal',pair:0},{k:'choice',q:'Which word starts with /p/?',a:'أي كلمة تبدأ بصوت /p/؟',o:['pen','fan','van','ban'],ans:0,ex:'P تُلفظ بشفايف منفجرة، وليس كـ B.'},
+   {k:'order',words:['am','I','Sara'],ans:'I am Sara'}]},
+ {t:'الأصوات الصعبة والمزدوجات',a:'p / v / g / ch / sh / th',focus:'phonics2',
+  learn:[{w:'p',a:'/p/ — شفتان تنفجران (لا كـ ب)',ex:'pen, map, cap'},{w:'v',a:'/v/ — أسنان على الشفة (لا كـ ف)',ex:'van, very, five'},
+   {w:'g',a:'/g/ — أقصى الحلق (لا كـ ج)',ex:'go, bag, big'},{w:'sh',a:'/ʃ/ — ش',ex:'ship, fish, shop'},
+   {w:'ch',a:'/tʃ/ — تش',ex:'chair, cheese, much'},{w:'th',a:'/θ/ — ث / /ð/ — ذ',ex:'think, this, mother'},
+   {w:'ee',a:'/iː/ — صوت طويل',ex:'see, tree, green'},{w:'oo',a:'/uː/ أو /ʊ/',ex:'food, moon, book'}],
+  pattern:'This is + a/an + اسم  →  This is a pen.',
+  drills:[{k:'minimal',pair:3},{k:'minimal',pair:5},{k:'choice',q:'"van" starts with:',a:'كلمة van تبدأ بصوت:',o:['/v/','/f/','/b/','/w/'],ans:0,ex:'V صوت مجهور؛ ضع إصبعك على حنجرك لتحسّ بالاهتزاز.'}]},
+ {t:'الجملة الاسمية: to be',a:'أنا/هو/هي + am/is/are',focus:'grammar',
+  learn:[{w:'I am',a:'أنا',ex:'I am a student.'},{w:'you are',a:'أنت',ex:'You are my friend.'},
+   {w:'he is',a:'هو',ex:'He is my brother.'},{w:'she is',a:'هي',ex:'She is a teacher.'},
+   {w:'it is',a:'هو/هي لغير العاقل',ex:'It is a book.'},{w:'we are',a:'نحن',ex:'We are happy.'},
+   {w:'they are',a:'هم',ex:'They are students.'},{w:'not',a:'النفي',ex:'I am not tired.'}],
+  pattern:'I am / He is / They are + …   |   السؤال: Are you…?',
+  drills:[{k:'choice',q:'She ___ my sister.',a:'هي ___ أختي.',o:['am','is','are','be'],ans:1,ex:'She تاخذ is.'},
+   {k:'order',words:['not','I','am','tired'],ans:'I am not tired'},
+   {k:'choice',q:'___ you a student?',a:'___ أنت طالب؟',o:['Am','Is','Are','Do'],ans:2,ex:'مع you نستخدم Are.'}]},
+ {t:'a / an / والجمع',a:'تنكير وجمع الأسماء',focus:'grammar',
+  learn:[{w:'a',a:'أ/ة قبل ساكن',ex:'a book, a pen'},{w:'an',a:'أ/ة قبل متحرك',ex:'an apple, an egg'},
+   {w:'the',a:'أل للتعريف',ex:'The book is on the table.'},{w:'-s',a:'جمع عادي',ex:'books, pens, cats'},
+   {w:'-es',a:'جمع بعد s/sh/ch',ex:'boxes, buses, watches'},{w:'children',a:'أطفال (غير منتظم)',ex:'The children are happy.'},
+   {w:'men',a:'رجال',ex:'two men'},{w:'women',a:'نساء',ex:'three women'}],
+  pattern:'a + ساكن | an + متحرك | الجمع بـ -s/-es',
+  drills:[{k:'fill',q:'I have ___ apple.',a:'أنا أملك ___ تفاحة.',o:['a','an','the','two'],ans:1,ex:'apple يبدأ بصوت متحرك فنأخذ an.'},
+   {k:'choice',q:'plural of "box":',a:'جمع كلمة box:',o:['boxs','boxes','boxies','box'],ans:1,ex:'تنتهي بـ x فنضيف -es.'}]},
+ {t:'have got و can',a:'الملكية والقدرة',focus:'grammar',
+  learn:[{w:'have got',a:'يملك',ex:'I have got a car.'},{w:'has got',a:'يملك (هو/هي)',ex:'She has got a dog.'},
+   {w:'can',a:'يستطيع',ex:'I can swim.'},{w:'cannot / can\'t',a:'لا يستطيع',ex:'He can\'t drive.'},
+   {w:'swim',a:'يسبح',ex:'I can swim.'},{w:'drive',a:'يقود',ex:'Can you drive?'},
+   {w:'cook',a:'يطبخ',ex:'She can cook.'},{w:'speak',a:'يتكلم',ex:'I can speak English.'}],
+  pattern:'I have got… / She has got…   |   I can… / Can you…?',
+  drills:[{k:'choice',q:'He ___ got a bike.',a:'هو يملك دراجة.',o:['have','has','is','can'],ans:1,ex:'He/She/It تأخذ has.'},
+   {k:'order',words:['can','I','English','speak'],ans:'I can speak English'},
+   {k:'choice',q:'Can you swim? — إجابة قصيرة صحيحة:',a:'',o:['Yes, I can.','Yes, I do.','Yes, I am.','Yes, I have.'],ans:0,ex:'نرد بـ can في السؤال بـ can.'}]},
+ {t:'المضارع البسيط',a:'الروتين والنفي بـ do/does',focus:'grammar',
+  learn:[{w:'I work',a:'أنا أعمل',ex:'I work every day.'},{w:'He works',a:'هو يعمل (بـ s)',ex:'He works in a shop.'},
+   {w:'do',a:'أداة سؤال/نفي',ex:'Do you like tea?'},{w:'does',a:'أداة مع هو/هي',ex:'Does she like tea?'},
+   {w:'don\'t',a:'لا (نفي)',ex:'I don\'t like coffee.'},{w:'doesn\'t',a:'لا (نفي هو/هي)',ex:'He doesn\'t like rice.'},
+   {w:'every day',a:'كل يوم',ex:'I read every day.'},{w:'usually',a:'عادةً',ex:'I usually drink tea.'}],
+  pattern:'He/She + فعل + s  |  Do/Does + فاعل + فعل؟',
+  drills:[{k:'choice',q:'She ___ TV every night.',a:'هي ___ التلفاز كل ليلة.',o:['watch','watches','watching','watched'],ans:1,ex:'مع She يضاف -es لأن الفعل ينتهي بـ ch.'},
+   {k:'order',words:['don\'t','I','coffee','like'],ans:'I don\'t like coffee'},
+   {k:'choice',q:'___ he play football?',a:'___ هو يلعب كرة القدم؟',o:['Do','Does','Is','Can'],ans:1,ex:'He تاخذ Does.'}]},
+ {t:'الأسئلة و there is/are',a:'Wh- وحروف الجر',focus:'grammar',
+  learn:[{w:'what',a:'ماذا',ex:'What is your name?'},{w:'where',a:'أين',ex:'Where is the book?'},
+   {w:'when',a:'متى',ex:'When do you work?'},{w:'who',a:'من',ex:'Who is she?'},
+   {w:'there is',a:'يوجد (مفرد)',ex:'There is a cat.'},{w:'there are',a:'يوجد (جمع)',ex:'There are two cats.'},
+   {w:'in / on / under',a:'في / على / تحت',ex:'The cat is under the table.'},{w:'next to',a:'بجانب',ex:'The bank is next to the shop.'}],
+  pattern:'What/Where/When…?   |   There is/are + اسم + مكان',
+  drills:[{k:'choice',q:'___ is my bag? — It is on the chair.',a:'___ حقيبتي؟ — على الكرسي.',o:['What','Where','Who','When'],ans:1,ex:'السؤال عن المكان بـ Where.'},
+   {k:'choice',q:'There ___ three students.',a:'يوجد ثلاثة طلاب.',o:['is','are','am','be'],ans:1,ex:'العدد جمع فنستخدم are.'},
+   {k:'order',words:['the','under','cat','is','table','the'],ans:'The cat is under the table'}]},
+ {t:'الماضي البسيط',a:'was/were والفعل الماضي',focus:'grammar',
+  learn:[{w:'was / were',a:'كان / كانوا',ex:'I was tired. They were happy.'},
+   {w:'went',a:'ذهب (ماضي go)',ex:'I went to school.'},{w:'saw',a:'رأى',ex:'I saw a film.'},
+   {w:'ate',a:'أكل',ex:'We ate rice.'},{w:'had',a:'كان لديه',ex:'I had a car.'},
+   {w:'did',a:'أداة السؤال في الماضي',ex:'Did you go?'},{w:'didn\'t',a:'لم (نفي)',ex:'I didn\'t see him.'},
+   {w:'yesterday',a:'أمس',ex:'I saw him yesterday.'}],
+  pattern:'الفعل + ed | was/were | Did + فاعل + فعل؟',
+  drills:[{k:'choice',q:'I ___ to the park yesterday.',a:'ذهبت إلى الحديقة أمس.',o:['go','goed','went','going'],ans:2,ex:'go ماضيه غير منتظم: went.'},
+   {k:'order',words:['didn\'t','I','tea','drink'],ans:'I didn\'t drink tea'},
+   {k:'choice',q:'She ___ at home last night.',a:'كانت في المنزل ليلة أمس.',o:['is','was','were','are'],ans:1,ex:'She تاخذ was في الماضي.'}]},
+ {t:'المستقبل',a:'will و going to',focus:'grammar',
+  learn:[{w:'will',a:'سوف',ex:'I will call you.'},{w:'won\'t',a:'لن',ex:'I won\'t be late.'},
+   {w:'going to',a:'ينوي أن',ex:'I am going to study.'},{w:'tomorrow',a:'غداً',ex:'See you tomorrow.'},
+   {w:'next week',a:'الأسبوع القادم',ex:'I will travel next week.'},{w:'maybe',a:'ربما',ex:'Maybe it will rain.'},
+   {w:'plan',a:'خطة',ex:'What is your plan?'},{w:'hope',a:'يأمل',ex:'I hope you are well.'}],
+  pattern:'will + فعل  |  am/is/are going to + فعل',
+  drills:[{k:'choice',q:'It ___ rain tomorrow.',a:'قد تمطر غداً.',o:['will','is','do','did'],ans:0,ex:'التنبؤ بـ will.'},
+   {k:'order',words:['going','I','am','to','study'],ans:'I am going to study'}]},
+ {t:'الصفات والمقارنة',a:'أكبر/أصغر/الأفضل',focus:'grammar',
+  learn:[{w:'big — bigger',a:'كبير — أكبر',ex:'This box is bigger.'},{w:'small — smaller',a:'صغير — أصغر',ex:'This one is smaller.'},
+   {w:'good — better',a:'جيد — أفضل',ex:'This is better.'},{w:'bad — worse',a:'سيئ — أسوأ',ex:'That is worse.'},
+   {w:'the best',a:'الأفضل',ex:'He is the best student.'},{w:'than',a:'من (في المقارنة)',ex:'A is bigger than B.'},
+   {w:'beautiful',a:'جميل',ex:'a beautiful city'},{w:'interesting',a:'مثير للاهتمام',ex:'an interesting book'}],
+  pattern:'صفة + er + than  |  the + صفة + est',
+  drills:[{k:'choice',q:'This book is ___ than that one.',a:'هذا الكتاب أفضل من ذاك.',o:['good','better','best','well'],ans:1,ex:'المقارنة بين اثنين بـ better.'},
+   {k:'choice',q:'She is the ___ student in class.',a:'هي أفضل طالبة في الصف.',o:['good','better','best','well'],ans:2,ex:'مع the والمقارنة بين أكثر من اثنين نستخدم best.'}]},
+ {t:'مهارات الاستماع والقراءة',a:'تدريب مكثف على نمط STEP',focus:'exam',
+  learn:[{w:'main idea',a:'الفكرة الرئيسية',ex:'What is the main idea?'},{w:'detail',a:'تفصيل',ex:'Find the detail.'},
+   {w:'infer',a:'يستنتج',ex:'What can you infer?'},{w:'vocabulary',a:'المفردات',ex:'Guess the word.'},
+   {w:'skim',a:'قراءة سريعة للفكرة',ex:'Skim the text.'},{w:'scan',a:'بحث عن معلومة',ex:'Scan for the name.'},
+   {w:'conversation',a:'محادثة',ex:'Listen to the conversation.'},{w:'speaker',a:'المتحدث',ex:'Who is the speaker?'}],
+  pattern:'استمع → حدد الفكرة → ارجع للتفاصيل',
+  drills:[{k:'listen',script:'Hello, my name is Sara. I am a teacher. I work in a school.',q:'What is Sara\'s job?',a:'ما مهنة سارة؟',o:['A doctor','A teacher','A student','A driver'],ans:1,ex:'قالت "I am a teacher".'},
+   {k:'read',text:'Ali lives in a small house near the park. Every morning he drinks tea and walks to school. He likes maths very much.',qs:[{q:'Where does Ali live?',a:'أين يسكن علي؟',o:['In a big city','Near the park','In a school','Near the sea'],ans:1},{q:'What does he drink every morning?',a:'ماذا يشرب كل صباح؟',o:['Coffee','Milk','Tea','Water'],ans:2}]}]},
+ {t:'الكتابة والمحاكاة النهائية',a:'فقرة STEP + اختبار مصغّر',focus:'writing',
+  learn:[{w:'topic sentence',a:'جملة الموضوع',ex:'I want to talk about my family.'},
+   {w:'supporting idea',a:'فكرة داعمة',ex:'My father is a doctor.'},{w:'example',a:'مثال',ex:'For example, he helps people.'},
+   {w:'conclusion',a:'خاتمة',ex:'In conclusion, I love my family.'},{w:'because',a:'لأن',ex:'I like it because it is fun.'},
+   {w:'also',a:'أيضاً',ex:'I also like reading.'},{w:'however',a:'مع ذلك',ex:'However, it is difficult.'},
+   {w:'in conclusion',a:'في الختام',ex:'In conclusion, English is useful.'}],
+  pattern:'مقدمة (2 جمل) → فقرتان (3 جمل) → خاتمة (جملة)',
+  drills:[{k:'write',prompt:'Write 5 sentences about your daily routine. Use: I, usually, then, because.',a:'اكتب 5 جمل عن روتينك اليومي.',model:'I get up at seven. I usually drink tea. Then I go to school. I like school because it is useful. I read books in the evening.',keys:['I','usually','then','because']}]}
+];
+
+/* ============ بنك STEP ============ */
+const BANK={
+ listening:[
+  {script:'Good morning. My name is John. I am from Canada.',q:'Where is John from?',a:'من أين جون؟',o:['England','Canada','America','Australia'],ans:1,ex:'قال "I am from Canada".'},
+  {script:'The meeting will start at nine o\'clock in the morning.',q:'When will the meeting start?',a:'متى تبدأ الاجتماع؟',o:['At 9 a.m.','At 9 p.m.','At 10 a.m.','At 8 a.m.'],ans:0,ex:'nine o\'clock in the morning = 9 صباحاً.'},
+  {script:'I would like a cup of tea, please.',q:'What does the speaker want?',a:'ماذا يريد المتحدث؟',o:['Coffee','Water','Tea','Juice'],ans:2,ex:'طلب "a cup of tea".'},
+  {script:'Mary is reading a book in the library.',q:'What is Mary doing?',a:'ماذا تفعل ماري؟',o:['Writing','Reading','Sleeping','Shopping'],ans:1,ex:'الفعل is reading.'},
+  {script:'The blue bag is on the table near the door.',q:'Where is the blue bag?',a:'أين الحقيبة الزرقاء؟',o:['Under the table','Near the door','On the chair','In the bag'],ans:1,ex:'"near the door".'},
+  {script:'My brother can drive, but he cannot swim.',q:'What can the brother do?',a:'ماذا يستطيع الأخ أن يفعل؟',o:['Swim','Drive','Cook','Sing'],ans:1,ex:'التناقض: can drive, cannot swim.'}
+ ],
+ structure:[
+  {q:'Neither of the students ___ the answer.',a:'',o:['know','knows','knowing','are know'],ans:1,ex:'Neither يُعامل كمفرد فنأخذ knows.'},
+  {q:'I look forward to ___ from you soon.',a:'أتطلع لسماع ردك قريباً.',o:['hear','hearing','heard','to hear'],ans:1,ex:'بعد look forward to يأتي الفعل بـ -ing.'},
+  {q:'She has lived here ___ 2015.',a:'هي تعيش هنا منذ 2015.',o:['for','since','from','during'],ans:1,ex:'نستخدم since مع نقطة زمنية.'},
+  {q:'If I ___ more time, I would travel.',a:'لو كان لدي وقت أكثر لسافرت.',o:['have','had','will have','having'],ans:1,ex:'الشرط الخيالي في الماضي: If + had.'},
+  {q:'The book ___ I bought is interesting.',a:'الكتاب الذي اشتريته ممتع.',o:['which','who','whom','what'],ans:0,ex:'للأشياء نستخدم which/that.'},
+  {q:'He is used to ___ early.',a:'اعتاد أن يستيقظ مبكراً.',o:['wake','waking','woke','wakes'],ans:1,ex:'be used to + -ing.'}
+ ],
+ reading:[
+  {text:'Cairo is the capital of Egypt. It is a large city on the Nile. Millions of people live there. Visitors can see the pyramids near Cairo. The weather is usually hot and dry.',qs:[
+   {q:'What is the main idea of the text?',a:'ما الفكرة الرئيسية؟',o:['The Nile river','The city of Cairo','The pyramids','Egyptian food'],ans:1,ex:'النص كله عن القاهرة.'},
+   {q:'Where is Cairo located?',a:'أين تقع القاهرة؟',o:['On the Nile','Near the sea','In the desert','On a mountain'],ans:0,ex:'"on the Nile".'},
+   {q:'The word "visitors" means:',a:'كلمة visitors تعني:',o:['Students','Tourists','Doctors','Workers'],ans:1,ex:'الزوار = السياح.'}]},
+  {text:'Reading every day is a good habit. It helps you learn new words and improve your grammar. It also makes you more knowledgeable. Even ten minutes a day can make a big difference.',qs:[
+   {q:'What is the best title?',a:'أفضل عنوان للنص؟',o:['How to Sleep Well','The Benefits of Reading','A Difficult Exam','My Favorite Food'],ans:1,ex:'الفوائد هي المحور.'},
+   {q:'According to the text, reading helps you:',a:'حسب النص، القراءة تساعدك على:',o:['Sleeping more','Learning new words','Eating better','Driving safely'],ans:1,ex:'"learn new words".'},
+   {q:'"habit" means:',a:'كلمة habit تعني:',o:['عادة','كتاب','كلمة','وقت'],ans:0,ex:'عادة.'}]}
+ ],
+ writing:[
+  {prompt:'Write a short paragraph (5–7 sentences) about your favorite place. Mention: where it is, why you like it, and what you do there.',a:'اكتب فقرة قصيرة عن مكانك المفضل.',model:'My favorite place is the park near my house. It is quiet and green. I go there every Friday. I like it because I can relax and read. Sometimes I play football with my friends. It is a happy place for me.',keys:['where','because','every','I']},
+  {prompt:'Write 5 sentences about a person you admire. Use: is, has got, can, because.',a:'اكتب 5 جمل عن شخص تعجبك.',model:'I admire my mother. She is a kind person. She has got a big heart. She can cook very well. I admire her because she always helps people.',keys:['is','has got','can','because']}
+ ]
+};
+const SECTION_AR={listening:'الاستماع',structure:'التركيب',reading:'القراءة',writing:'الكتابة'};
+
+/* ============ أدوات SRS ============ */
+const INTERVAL=[0,1,3,7,14,30];
+function dueCards(){const today=new Date().toISOString().slice(0,10);return VOCAB.filter(v=>{const s=A.srs[v.w];return !s||s.due<=today;});}
+function rateCard(w,ok){const s=A.srs[w]||{box:0,due:new Date().toISOString().slice(0,10)};s.box=ok?Math.min((s.box||0)+1,INTERVAL.length-1):0;
+ const d=new Date();d.setDate(d.getDate()+INTERVAL[s.box]);s.due=d.toISOString().slice(0,10);A.srs[w]=s;save();}
+
+/* ============ التصيير ============ */
+const $=id=>document.getElementById(id);
+function tabs(){document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+ ['today','path','cards','bank','errors','settings'].forEach(t=>$('tab-'+t).classList.toggle('hidden',t!==b.dataset.tab));
+ renderAll();});}
+function header(){const w=A.settings.week,b=bridge();$('chipWeek').textContent='الأسبوع '+w;$('chipXP').textContent=A.progress.xp+' XP';
+ $('chipBridge').textContent=b===2?'العربية: جسر كامل':b===1?'العربية: جسر مختصر':'العربية: مقطوعة (انغماس)';}
+function renderAll(){header();renderToday();renderPath();renderCards();renderBank();renderErrors();renderSettings();}
+
+function renderToday(){
+ const w=Math.min(A.settings.week,12),info=WEEKS[w-1],due=dueCards().length;
+ const day=A.settings.day, secs=['listening','structure','reading','writing'];
+ $('tab-today').innerHTML=`
+  <div class="grid">
+   <div class="card"><h3>خطة اليوم</h3><div class="muted">الأسبوع ${w} · اليوم ${day} · ${info.a}</div>
+     <div class="steps"><span class="on">1 بطاقات</span><span>2 درس الأسبوع</span><span>3 تمرين</span><span>4 سؤال STEP</span><span>5 إنتاج</span></div>
+     <button class="btn" id="startLesson">▶ ابدأ جلسة الـ 30 دقيقة</button>
+     <p class="muted" style="margin-top:8px">المراجعة المستحقة اليوم: ${due} بطاقة</p>
+   </div>
+   <div class="card"><h3>تقدّمك</h3><p><span class="stat">${A.progress.xp}</span> <span class="muted">XP</span></p>
+     <p>سلسلة الأيام: <b>${A.progress.streak}</b> 🔥</p>
+     <p class="muted">الهدف: 30 دقيقة × 5 أيام أسبوعياً</p></div>
+   ${secs.map(s=>`<div class="card"><h3>${SECTION_AR[s]}</h3><div class="stat" style="font-size:22px">${A.progress.section[s]||0}</div>
+     <div class="bar"><i style="width:${Math.min(100,(A.progress.section[s]||0)*5)}%"></i></div><div class="muted">سؤال صحيح</div></div>`).join('')}
+  </div>
+  <div class="card" style="margin-top:14px"><h3>الدرس المحوري هذا الأسبوع: ${info.t}</h3>
+   <p><b>النمط:</b> <span class="en">${info.pattern}</span></p>
+   <p class="muted">${ar('التركيز: '+info.a)||'Focus: '+info.t}</p></div>`;
+ $('startLesson').onclick=startLesson;
+}
+
+function renderPath(){
+ $('tab-path').innerHTML='<div class="card"><h3>خطة 12 أسبوعاً نحو STEP</h3>'+WEEKS.map((x,i)=>{
+  const done=!!A.progress.weeks[i+1];return `<div class="weekbox ${done?'done':''}"><b>${i+1}. ${x.t}</b> <span class="pill">${done?'مكتمل':'قيد التنفيذ'}</span>
+   <div class="muted">${x.a} · ${x.focus}</div></div>`;}).join('')+'</div>';
+}
+
+let cardFilter='all',cardIdx=0;
+function renderCards(){
+ const list=VOCAB.filter(v=>cardFilter==='all'||v.c===cardFilter);
+ const v=list[cardIdx%Math.max(1,list.length)];
+ $('tab-cards').innerHTML=`<div class="grid">
+  <div class="card"><h3>بطاقات المفردات</h3>
+   <select id="catSel" style="width:100%;padding:8px;border-radius:10px;border:1px solid var(--line)">
+    <option value="all">كل الكلمات (${VOCAB.length})</option>
+    ${Object.entries(VCAT).map(([k,n])=>`<option value="${k}" ${cardFilter===k?'selected':''}>${n}</option>`).join('')}
+   </select>
+   <div class="flash" id="flash"><div class="word en">${v?v.w:'-'}</div><div class="muted">${v?ar(v.a):''}</div><div class="muted">اضغط لقلب البطاقة</div></div>
+   <div class="rowflex" style="margin-top:10px"><button class="btn sm" id="say">🔊 اسمع</button><button class="btn sm ghost" id="prev">‹ السابق</button><button class="btn sm ghost" id="next">التالي ›</button></div>
+  </div>
+  <div class="card"><h3>الأزواج الصوتية (Minimal Pairs)</h3>${MINIMAL.map((m,i)=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)">
+    <div class="rowflex"><button class="btn sm ghost" onclick="speak('${m.a}')">🔊 ${m.a}</button><button class="btn sm ghost" onclick="speak('${m.b}')">🔊 ${m.b}</button></div>
+    <div class="muted">${m.hint}</div></div>`).join('')}</div>
+ </div>`;
+ $('catSel').onchange=e=>{cardFilter=e.target.value;cardIdx=0;renderCards();};
+ $('next').onclick=()=>{cardIdx++;renderCards();};
+ $('prev').onclick=()=>{cardIdx=Math.max(0,cardIdx-1);renderCards();};
+ $('say').onclick=()=>speak(v?v.w:'');
+ $('flash').onclick=()=>{if(!v)return;$('flash').innerHTML=`<div class="word en">${v.w}</div><div class="tr">${v.a}</div><div class="muted en">e.g. ${v.w}</div>`;speak(v.w);};
+}
+
+let bankSec='listening',bankIdx=0;
+function renderBank(){
+ const arr=BANK[bankSec],x=arr[bankIdx%arr.length];
+ $('tab-bank').innerHTML=`<div class="card"><h3>بنك أسئلة STEP — تدريب حر</h3>
+  <div class="rowflex">${Object.keys(BANK).map(s=>`<button class="btn sm ${bankSec===s?'':'ghost'}" data-sec="${s}">${SECTION_AR[s]}</button>`).join('')}</div>
+  <div id="bankQ" style="margin-top:14px"></div></div>`;
+ document.querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>{bankSec=b.dataset.sec;bankIdx=0;renderBank();});
+ renderItem($('bankQ'),x,bankSec,()=>{bankIdx++;setTimeout(renderBank,700);});
+}
+
+function renderErrors(){
+ const e=A.progress.errors||[];
+ $('tab-errors').innerHTML=`<div class="card"><h3>سجل الأخطاء (${e.length})</h3>
+  ${e.length?'<table><tr><th>القسم</th><th>السؤال</th><th>إجابتك</th><th>الصحيح</th><th></th></tr>'+e.slice().reverse().map((r,i)=>`<tr><td>${SECTION_AR[r.sec]||'-'}</td><td class="en">${r.q||'-'}</td><td class="en">${r.your||'-'}</td><td class="en">${r.correct||'-'}</td><td><button class="btn sm ghost" data-del="${e.length-1-i}">حذف</button></td></tr>`).join('')+'</table>':'<p class="muted">لا توجد أخطاء بعد — أحسنت!</p>'}</div>`;
+ document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{A.progress.errors.splice(+b.dataset.del,1);save();renderErrors();toast('تم الحذف');});
+}
+function addError(sec,q,your,correct){A.progress.errors=A.progress.errors||[];A.progress.errors.push({sec,q,your,correct,date:new Date().toISOString()});save();}
+
+function renderSettings(){
+ $('tab-settings').innerHTML=`<div class="grid">
+  <div class="card"><h3>الإعدادات</h3>
+   <label>اسم المتعلم<br><input type="text" id="setName" value="${A.settings.name}"></label><br><br>
+   <label>الصوت التلقائي <input type="checkbox" id="setSound" ${A.settings.sound?'checked':''}></label><br>
+   <label>سرعة الصوت: <input type="range" id="setRate" min="0.6" max="1.2" step="0.05" value="${A.settings.rate}"></label><br>
+   <label>وضع العربية:
+    <select id="setBridge"><option value="auto" ${A.settings.bridge==='auto'?'selected':''}>تلقائي (جسر ثم فطام)</option><option value="2" ${A.settings.bridge==='2'?'selected':''}>جسر كامل</option><option value="1" ${A.settings.bridge==='1'?'selected':''}>جسر مختصر</option><option value="0" ${A.settings.bridge==='0'?'selected':''}>انغماس كامل</option></select></label><br><br>
+   <label>الأسبوع الحالي: <input type="number" id="setWeek" min="1" max="12" value="${A.settings.week}"></label><br><br>
+   <button class="btn" id="saveSet">حفظ الإعدادات</button>
+  </div>
+  <div class="card"><h3>كيف تستخدم البيئة؟</h3><p class="muted">
+   1) ابدأ من «اليوم» واضغط زر الجلسة. 2) كل جلسة = 5 خطوات نحو 30 دقيقة.<br>
+   3) راجع البطاقات يومياً؛ التطبيق يختار المستحق منها تلقائياً.<br>
+   4) تصنّف أخطاؤك في «أخطائي» حسب قسم STEP.<br>
+   5) بعد أسبوعين يتحول الشرح العربي إلى مختصر، ثم ينقطع تماماً من الأسبوع 7.<br>
+   6) البيانات محفوظة في متصفحك (localStorage) — لا حاجة للإنترنت.
+  </p><button class="btn danger sm" id="reset">إعادة ضبط كل التقدم</button></div>
+ </div>`;
+ $('setName').onchange=e=>A.settings.name=e.target.value;$('setSound').onchange=e=>A.settings.sound=e.target.checked;
+ $('setRate').onchange=e=>A.settings.rate=+e.target.value;$('setBridge').onchange=e=>A.settings.bridge=e.target.value;
+ $('setWeek').onchange=e=>A.settings.week=Math.max(1,Math.min(12,+e.target.value));
+ $('saveSet').onclick=()=>{save();renderAll();toast('تم الحفظ');};
+ $('reset').onclick=()=>{if(confirm('سيُحذف كل التقدم. متأكد؟')){localStorage.removeItem(KEY);location.reload();}};
+}
+
+/* ============ محرك الأسئلة ============ */
+function renderItem(host,x,sec,done){
+ if(x.k==='minimal')return renderMinimal(host,x,done);
+ if(x.words)return renderOrder(host,x,sec,done);
+ if(x.keys||x.model)return renderWrite(host,x,sec,done);
+ if(x.qs)return renderReading(host,x,sec,done);
+ return renderChoice(host,x,sec,done);
+}
+function bump(sec,ok){if(ok){A.progress.xp+=10;if(sec)A.progress.section[sec]=(A.progress.section[sec]||0)+1;}save();header();}
+function renderChoice(host,x,sec,done){
+ let html='';
+ if(x.script)html+=`<div class="card" style="background:#f0fdfa"><b class="en">${x.script}</b><br><button class="btn sm" id="playAudio">🔊 استمع للنص</button></div>`;
+ if(x.text)html+=`<div class="card" style="background:#fffbeb"><p class="en" style="font-size:17px">${x.text}</p><button class="btn sm ghost" id="playText">🔊 استمع للنص</button></div>`;
+ if(x.q)html+=`<p class="qfont en">${x.q}</p>`;
+ if(x.a&&bridge()>0)html+=`<p class="muted">${x.a}</p>`;
+ html+='<div class="opts">'+x.o.map((o,i)=>`<button class="opt en" data-i="${i}">${String.fromCharCode(65+i)}. ${o}</button>`).join('')+'</div><div class="fb"></div>';
+ host.innerHTML=html;
+ const play=host.querySelector('#playAudio')||host.querySelector('#playText');
+ if(play)play.onclick=()=>speak(x.script||x.text||'');
+ host.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+  if(host.dataset.answered)return;host.dataset.answered='1';
+  const i=+b.dataset.i,ok=i===x.ans;
+  host.querySelectorAll('.opt').forEach((o,j)=>{const c=j===x.ans?'right':(j===i?'wrong':null);if(c)o.classList.add(c);o.disabled=true;});
+  host.querySelector('.fb').innerHTML=`<div style="margin-top:10px;padding:12px;border-radius:12px;background:${ok?'#f0fdf4':'#fef2f2'}">
+   <b>${ok?'✅ إجابة صحيحة +10 XP':'❌ إجابة خاطئة'}</b><div class="muted">${ar(x.ex||'')||x.ex||''}</div></div>`;
+  if(ok)A.progress.xp+=10;else addError(sec||'structure',x.q,x.o[i],x.o[x.ans]);
+  save();header();done&&done(ok);
+ });
+}
+function renderOrder(host,x,sec,done){
+ const sh=x.words.slice().sort(()=>Math.random()-.5);
+ host.innerHTML=`<p class="qfont">رتّب الكلمات لتكوين الجملة</p>${x.a&&bridge()>0?`<p class="muted">${x.a}</p>`:''}
+  <div class="rowflex" id="wbank">${sh.map(w=>`<button class="btn ghost" data-w="${w}">${w}</button>`).join('')}</div>
+  <div class="en built" style="min-height:42px;padding:8px;border:1px dashed var(--line);border-radius:10px;margin:8px 0"></div>
+  <button class="btn" id="chkOrder">تحقق ✓</button><div class="fb"></div>`;
+ let built=[];
+ host.querySelectorAll('#wbank button').forEach(b=>b.onclick=()=>{built.push(b.dataset.w);b.disabled=true;host.querySelector('.built').textContent=built.join(' ');});
+ host.querySelector('#chkOrder').onclick=()=>{
+  const norm=s=>s.toLowerCase().replace(/\s+/g,' ').trim();
+  const ok=norm(built.join(' '))===norm(x.ans);
+  host.querySelectorAll('#wbank button').forEach(b=>b.disabled=true);
+  host.querySelector('.fb').innerHTML=`<div style="margin-top:8px;padding:10px;border-radius:10px;background:${ok?'#f0fdf4':'#fef2f2'}">
+   <b>${ok?'✅ صحيح +10 XP':'❌ الصحيح: '+x.ans}</b>${x.ex&&bridge()>0?`<div class="muted">${x.ex}</div>`:''}</div>`;
+  if(ok)A.progress.xp+=10;else addError(sec||'structure',x.ans,built.join(' '),x.ans);
+  save();header();done&&done(ok);
+ };
+}
+function renderWrite(host,x,sec,done){
+ host.innerHTML=`<p class="qfont en">${x.prompt||x.q}</p>${x.a&&bridge()>0?`<p class="muted">${x.a}</p>`:''}
+  <textarea class="wr" placeholder="Write here..."></textarea>
+  <div class="rowflex" style="margin-top:8px"><button class="btn" id="wrDone">تسجيل الإجابة</button><button class="btn ghost" id="showModel">🔊 استمع للنموذج</button></div><div class="fb"></div>`;
+ host.querySelector('#showModel').onclick=()=>speak(x.model||'');
+ host.querySelector('#wrDone').onclick=()=>{
+  const v=host.querySelector('.wr').value.trim();
+  const miss=(x.keys||[]).filter(k=>!v.toLowerCase().includes(k.toLowerCase()));
+  A.progress.section.writing=(A.progress.section.writing||0)+1;A.progress.xp+=15;save();header();
+  host.querySelector('.fb').innerHTML=`<div style="margin-top:8px;padding:10px;border-radius:10px;background:#f0fdf4"><b>تم الحفظ ✓ +15 XP</b>
+   ${miss.length?`<div class="muted">عناصر ناقصة: ${miss.join('، ')}</div>`:'<div class="muted">استخدمت كل العناصر المطلوبة — ممتاز!</div>'}
+   <details><summary>نموذج الإجابة</summary><p class="en">${x.model||''}</p></details></div>`;
+  done&&done(true);
+ };
+}
+function renderReading(host,x,sec,done){
+ host.innerHTML=`<div class="card" style="background:#fffbeb"><p class="en" style="font-size:17px">${x.text}</p><button class="btn sm ghost" id="playText">🔊 استمع للنص</button></div><div class="rqs"></div>`;
+ host.querySelector('#playText').onclick=()=>speak(x.text);
+ const sub=host.querySelector('.rqs');let i=0;
+ (function step(){
+  if(i>=x.qs.length){done&&done();return;}
+  const d=document.createElement('div');d.style.marginTop='12px';sub.appendChild(d);
+  renderChoice(d,x.qs[i++],sec,step);
+ })();
+}
+function renderMinimal(host,x,done){
+ const m=MINIMAL[x.pair];
+ host.innerHTML=`<p class="qfont">أي كلمة تسمعها؟ Which word do you hear?</p>
+  <div class="rowflex"><button class="btn ghost" id="mA">🔊 ${m.a}</button><button class="btn ghost" id="mB">🔊 ${m.b}</button></div>
+  <p class="muted">${m.hint}</p><div class="rowflex" style="margin-top:10px"><button class="btn sm" id="pickA">${m.a}</button><button class="btn sm" id="pickB">${m.b}</button></div><div class="fb"></div>`;
+ const target=Math.random()<.5?m.a:m.b;speak(target);
+ host.querySelector('#mA').onclick=()=>speak(m.a);host.querySelector('#mB').onclick=()=>speak(m.b);
+ const check=v=>{const ok=v===target;
+  host.querySelector('.fb').innerHTML=`<b>${ok?'✅ صحيح +10 XP':'❌ خاطئ — الصحيح: '+target}</b>`;
+  if(ok)A.progress.xp+=10;else addError('listening','Minimal pair: '+m.a+' / '+m.b,v,target);
+  save();header();done&&done(ok);};
+ host.querySelector('#pickA').onclick=()=>check(m.a);host.querySelector('#pickB').onclick=()=>check(m.b);
+}
+function renderDrill(act,done){
+ const sec=act.k==='listen'?'listening':act.k==='read'?'reading':act.k==='write'?'writing':act.k==='minimal'?'listening':null;
+ renderItem($('qArea'),act,sec,()=>{const n=$('nextStep');if(n)n.classList.remove('hidden');});
+}
+
+/* ============ الجلسة اليومية ============ */
+let S=null,TIMER=null,TSTART=0;
+function updateTimer(){const el=document.getElementById('sessionTimer');if(!el)return;const s=Math.floor((Date.now()-TSTART)/1000);const m=Math.floor(s/60);el.textContent='⏱ '+String(m).padStart(2,'0')+':'+String(s%60).padStart(2,'0')+' / 30:00';el.style.background=s>1800?'#ef4444':'rgba(255,255,255,.18)';}
+function startLesson(){
+ TSTART=Date.now();if(TIMER)clearInterval(TIMER);TIMER=setInterval(updateTimer,1000);
+ const w=Math.min(A.settings.week,12),info=WEEKS[w-1];
+ const due=dueCards().slice(0,5);
+ const bankSecs=['listening','structure','reading','writing'];
+ const sec=bankSecs[(A.settings.day-1)%4];
+ const bq=BANK[sec][(A.settings.day-1)%BANK[sec].length];
+ S={step:0,steps:[
+   {k:'cards',cards:due},
+   {k:'learn',cards:info.learn},
+   {k:'drill',act:info.drills[(A.settings.day-1)%info.drills.length]},
+   {k:'bank',x:bq,sec},
+   {k:'produce',prompt:info.t}
+ ],answers:0};
+ renderStep();
+}
+function renderStep(){
+ if(!S)return;
+ if(S.step>=S.steps.length){finishLesson();return;}
+ const st=S.steps[S.step],host=$('tab-today');
+ const stepbar=`<div class="steps">${S.steps.map((_,i)=>`<span class="${i<S.step?'done':i===S.step?'on':''}">${i+1}</span>`).join('')}<span class="chip" id="sessionTimer" style="background:rgba(13,148,136,.12);color:#0f766e">⏱ 00:00 / 30:00</span></div>`;
+ let body='';
+ if(st.k==='cards'){
+  body=`<h3>الخطوة 1 — مراجعة البطاقات</h3><p class="muted">${st.cards.length?st.cards.length+' بطاقة مستحقة':'لا توجد بطاقات مستحقة — سنمرّ على كلمات جديدة'}</p>
+   <div id="cardArea"></div><button class="btn hidden" id="nextStep">التالي ›</button>`;
+ }
+ if(st.k==='learn'){
+  body=`<h3>الخطوة 2 — درس الأسبوع: ${WEEKS[A.settings.week-1].t}</h3><div id="learnArea"></div><button class="btn hidden" id="nextStep">التالي ›</button>`;
+ }
+ if(st.k==='drill'){body=`<h3>الخطوة 3 — تمرين</h3><div id="qArea"></div><button class="btn hidden" id="nextStep">التالي ›</button>`;}
+ if(st.k==='bank'){body=`<h3>الخطوة 4 — سؤال STEP: ${SECTION_AR[st.sec]}</h3><div id="qArea"></div><button class="btn hidden" id="nextStep">التالي ›</button>`;}
+ if(st.k==='produce'){body=`<h3>الخطوة 5 — إنتاج حر</h3><p class="muted">اكتب 3 جمل بالإنجليزية عن: ${st.prompt} — أو قلها بصوت عالٍ.</p>
+   <textarea id="prod" placeholder="I am... / I like... / It is..."></textarea>
+   <div class="rowflex" style="margin-top:8px"><button class="btn ghost" id="sayProd">🔊 اسمع ما كتبت</button><button class="btn" id="nextStep">حفظ وإتمام الجلسة ✓</button></div>`;}
+ host.innerHTML='<div class="card">'+stepbar+body+'</div>';
+ const go=()=>{S.step++;renderStep();};
+ if($('nextStep'))$('nextStep').onclick=go;
+ if(st.k==='cards')renderCardStep(st.cards,go);
+ if(st.k==='learn')renderLearnStep(st.cards,go);
+ if(st.k==='drill')renderDrill(st.act,go);
+ if(st.k==='bank')renderItem($('qArea'),st.x,st.sec,ok=>{if(ok)S.answers++;$('nextStep').classList.remove('hidden');});
+ if(st.k==='produce')$('sayProd').onclick=()=>speak($('prod').value||'Hello');
+}
+function renderCardStep(cards,done){
+ const list=cards.length?cards:[VOCAB[0],VOCAB[9],VOCAB[20],VOCAB[40],VOCAB[70]];
+ let i=0;const area=$('cardArea');
+ function show(){
+  if(i>=list.length){area.innerHTML='<p class="muted">تمت المراجعة ✓</p>';$('nextStep').classList.remove('hidden');return;}
+  const v=list[i];area.innerHTML=`<div class="flash" id="f"><div class="word en">${v.w}</div><div class="muted">اضغط لقلب البطاقة</div></div>
+   <div class="rowflex" style="margin-top:10px"><button class="btn sm" id="ok">✓ أعرفها</button><button class="btn sm ghost" id="no">↻ أدرسها</button></div>`;
+  $('f').onclick=()=>{ $('f').innerHTML=`<div class="word en">${v.w}</div><div class="tr">${v.a}</div>`;speak(v.w);};
+  $('ok').onclick=()=>{rateCard(v.w,true);i++;show();};
+  $('no').onclick=()=>{rateCard(v.w,false);i++;show();};
+ }show();
+}
+function renderLearnStep(cards,done){
+ let i=0;const area=$('learnArea');
+ function show(){
+  if(i>=cards.length){area.innerHTML='<p class="muted">انتهى الدرس ✓</p>';$('nextStep').classList.remove('hidden');return;}
+  const c=cards[i];area.innerHTML=`<div class="card" style="background:#f8fafc"><div class="word en" style="font-size:30px;font-weight:900">${c.w}</div>
+    <div>${ar(c.a)||''}</div><div class="muted en">${c.ex}</div><button class="btn sm" id="sayLearn">🔊</button></div>`;
+  $('sayLearn').onclick=()=>speak(c.w);i++;
+  const b=document.createElement('button');b.className='btn sm ghost';b.textContent=i>=cards.length?'إنهاء الدرس ›':'التالي ›';b.style.marginTop='10px';
+  b.onclick=show;area.appendChild(b);
+ }show();
+}
+
+function finishLesson(){
+ const today=new Date().toISOString().slice(0,10),p=A.progress;
+ p.xp+=20;p.days[today]=(p.days[today]||0)+1;
+ if(p.last!==today){const y=new Date();y.setDate(y.getDate()-1);p.streak=(p.last===y.toISOString().slice(0,10))?(p.streak||0)+1:1;p.last=today;}
+ const wk=A.settings.week;
+  if(A.settings.day>=5){p.weeks[wk]=true;A.settings.day=1;if(A.settings.week<12)A.settings.week++;}else A.settings.day++;
+ if(TIMER){clearInterval(TIMER);TIMER=null;}
+  save();S=null;renderAll();toast('أحسنت! انتهت الجلسة +20 XP 🎉');
+}
+
+/* ============ تشغيل ============ */
+tabs();renderAll();
+</script>
+</body>
+</html>
